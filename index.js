@@ -1,15 +1,16 @@
 import express from "express";
+import cors from "cors";
+import "./db.js";
 import bodyParser from "body-parser";
 import todosRouter from "./routes/todos.js";
-// define our app from express
+
 const app = express();
 
 const PORT = 3000;
 
-// parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded());
-// parse application/json
 app.use(bodyParser.json());
+app.use(cors());
 
 app.use("/todos", todosRouter);
 

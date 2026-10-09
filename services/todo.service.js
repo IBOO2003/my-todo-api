@@ -1,80 +1,71 @@
-let todos = [];
+import { eq, asc } from "drizzle-orm";
+import { db } from "../db.js";
+import { todos } from "../src/schema.js";
 
-export function getTodos(isCompleted) {
-  if (isCompleted === "true") {
-    return todos.filter((todo) => {
-      return todo.isCompleted === true;
-    });
+export async function getTodos(isCompleted) {
+  let query = db.select().from(todos);
+
+  if (isCompleted !== undefined) {
+    query = query.where(eq(todos.isCompleted, isCompleted === "true"));
   }
 
-  if (isCompleted === "false") {
-    return todos.filter((todo) => {
-      return todo.isCompleted === false;
-    });
+  query = query.orderBy(asc(todos.id));
+
+  return await query;
+}
+
+export async function getTodoById(id) {
+  const result = await db.select().from(todos).where(eq(todos.id, id));
+  return result[0];
+}
+
+export async function createTodo(todo) {
+  try {
+    const result = await db
+      .insert(todos)
+      .values({
+        todoTitle: todo.todo_title,
+        description: todo.description,
+        isCompleted: todo.is_completed ?? false,
+      })
+      .returning();
+
+    return result[0];
+  } catch (error) {
+    console.error("ERROR:", error);
+    throw error;
   }
-
-  return todos;
 }
 
-export function getTodoById(id) {
-  return todos.find((todo) => todo.id === id);
+export async function patchTodo(id, todo) {
+  const result = await db
+    .update(todos)
+    .set({
+      todoTitle: todo.todoTitle,
+      isCompleted: todo.is_completed,
+      description: todo.description,
+    })
+    .where(eq(todos.id, id))
+    .returning();
+
+  return result[0];
+}
+export async function putTodo(id, todo) {
+  const result = await db
+    .update(todos)
+    .set({
+      todoTitle: todo.todo_title,
+      description: todo.description,
+      isCompleted: todo.is_completed,
+    })
+    .where(eq(todos.id, id))
+    .returning();
+
+  return result[0];
 }
 
-export function createTodo(todo) {
-  todos.push(todo);
+export async function deleteTodo(id) {
+  const result = await db.delete(todos).where(eq(todos.id, id)).returning();
 
-  return todo;
-}
-
-export function createBulkTodos(newTodos) {
-  todos.push(...newTodos);
-
-  return newTodos;
-}
-
-export function updateTodo(id, data) {
-  const index = todos.findIndex((todo) => todo.id === id);
-
-  if (index === -1) {
-    return null;
-  }
-
-  todos[index] = {
-    id,
-    ...data,
-  };
-
-  return todos[index];
-}
-
-export function patchTodo(id, data) {
-  const index = todos.findIndex((todo) => todo.id === id);
-
-  if (index === -1) {
-    return null;
-  }
-
-  todos[index] = {
-    ...todos[index],
-    ...data,
-    id,
-  };
-
-  return todos[index];
-}
-
-export function deleteTodo(id) {
-  const index = todos.findIndex((todo) => todo.id === id);
-
-  if (index === -1) {
-    return null;
-  }
-
-  const deletedTodo = todos.splice(index, 1);
-
-  return deletedTodo[0];
-}
-
-export function todoExists(id) {
-  return todos.some((todo) => todo.id === id);
+  return result[0];
 }

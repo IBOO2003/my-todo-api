@@ -55,7 +55,7 @@ export async function createNewTodo(req, res) {
 
     res.status(201).json(newTodo);
   } catch (error) {
-    console.error("Error creating todo: ", error);
+    console.log("Error creating todo: ", error);
     return res.status(500).json({
       message: "internal server error",
     });

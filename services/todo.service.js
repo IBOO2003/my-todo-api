@@ -2,16 +2,10 @@ import { eq, asc } from "drizzle-orm";
 import { db } from "../db.js";
 import { todos } from "../src/schema.js";
 
-export async function getTodos(isCompleted) {
-  let query = db.select().from(todos);
+export async function getTodos() {
+  const result = await db.select().from(todos).orderBy(asc(todos.id));
 
-  if (isCompleted !== undefined) {
-    query = query.where(eq(todos.isCompleted, isCompleted === "true"));
-  }
-
-  query = query.orderBy(asc(todos.id));
-
-  return await query;
+  return result;
 }
 
 export async function getTodoById(id) {

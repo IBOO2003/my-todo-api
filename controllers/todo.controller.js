@@ -37,48 +37,65 @@ export async function getTodo(req, res) {
 }
 
 export async function createNewTodo(req, res) {
-  const todo = req.body;
+  try {
+    const todo = req.body;
 
-  if (!todo.todo_title) {
-    return res.status(400).json({
-      message: "todo_title is required",
+    if (!todo.todo_title || typeof todo.todo_title !== "string") {
+      return res.status(400).json({
+        message: "todo_title must be a non empty string",
+      });
+    }
+    if (!todo.description || typeof description !== "string") {
+      return res.status(400).json({
+        message: "description must be a non empty string",
+      });
+    }
+
+    const newTodo = await createTodo(todo);
+
+    res.status(201).json(newTodo);
+  } catch (error) {
+    console.error("Error creating todo: ", error);
+    return res.status(500).json({
+      message: "internal server error",
     });
   }
-
-  const newTodo = await createTodo(todo);
-
-  res.status(201).json(newTodo);
 }
 
 export async function patchTodoById(req, res) {
   const todoId = Number(req.params.id);
-  try {
-    if (Number.isNaN(todoId)) {
-      return res.status(400).json({
-        message: "ID must be a number",
-      });
-    }
 
-    const updatedTodo = await patchTodo(todoId, req.body);
-
-    if (!updatedTodo) {
-      return res.status(404).json({
-        message: "ID not found",
-      });
-    }
-
-    if (req.body === isNull) {
-      return res.status(400).json({
-        message: "",
-      });
-    }
-  } catch (error) {
+  if (!Number.isInteger(todoId) || todoId <= 0) {
     return res.status(400).json({
-      message: "internal server error",
+      message: "ID must be a positive integer",
     });
   }
 
-  res.status(200).json(updatedTodo);
+  try {
+    const todo = req.body ?? {};
+
+    if (Object.keys(todo).length === 0) {
+      return res.status(400).json({
+        message: "Request body cannot be empty",
+      });
+    }
+
+    const updatedTodo = await patchTodo(todoId, todo);
+
+    if (!updatedTodo) {
+      return res.status(404).json({
+        message: "Todo not found",
+      });
+    }
+
+    return res.status(200).json(updatedTodo);
+  } catch (error) {
+    console.error("Error updating todo:", error);
+
+    return res.status(500).json({
+      message: "Internal server error",
+    });
+  }
 }
 
 export async function putTodoById(req, res) {

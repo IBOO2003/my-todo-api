@@ -41,7 +41,7 @@ export async function patchTodo(id, todo) {
   const result = await db
     .update(todos)
     .set({
-      todoTitle: todo.todoTitle,
+      todoTitle: todo.todo_title,
       isCompleted: todo.is_completed,
       description: todo.description,
     })

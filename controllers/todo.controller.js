@@ -40,7 +40,7 @@ export async function createNewTodo(req, res) {
   try {
     const todo = req.body;
 
-    if (!todo.todo_title) {
+    if (!todo.todoTitle) {
       return res.status(400).json({
         message: "todo_title must be a non empty string",
       });

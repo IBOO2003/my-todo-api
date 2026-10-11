@@ -24,9 +24,9 @@ export async function createTodo(todo) {
     const result = await db
       .insert(todos)
       .values({
-        todoTitle: todo.todo_title,
+        todoTitle: todo.todoTitle,
         description: todo.description,
-        isCompleted: todo.is_completed ?? false,
+        isCompleted: todo.isCompleted ?? false,
       })
       .returning();
 

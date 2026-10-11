@@ -40,16 +40,16 @@ export async function createNewTodo(req, res) {
   try {
     const todo = req.body;
 
-    if (!todo.todo_title || typeof todo.todo_title !== "string") {
+    if (!todo.todo_title) {
       return res.status(400).json({
         message: "todo_title must be a non empty string",
       });
     }
-    if (!todo.description || typeof description !== "string") {
-      return res.status(400).json({
-        message: "description must be a non empty string",
-      });
-    }
+    // if (!todo.description || typeof description !== "string") {
+    //   return res.status(400).json({
+    //     message: "description must be a non empty string",
+    //   });
+    // }
 
     const newTodo = await createTodo(todo);
 

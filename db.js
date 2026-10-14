@@ -23,14 +23,6 @@ const pool = new Pool({
 
 export const db = drizzle(pool);
 
-pool.query("SELECT NOW()", (error) => {
-  if (error) {
-    console.error("Database connection failed:", error.message);
-  } else {
-    console.log("Database connected!");
-  }
-});
-
 export default pool;
 
 // postgresql://postgres:tfipYzAHakFTAlvuGkNkftMzdvVexxcu@roundhouse.proxy.rlwy.net:27391/railway

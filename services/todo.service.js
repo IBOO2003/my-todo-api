@@ -1,65 +1,73 @@
-import { eq, asc } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { db } from "../db.js";
 import { todos } from "../src/schema.js";
 
-export async function getTodos() {
-  const result = await db.select().from(todos).orderBy(asc(todos.id));
-
+export async function getTodos(userId) {
+  const result = await db.select().from(todos).where(eq(todos.userId, userId));
   return result;
 }
 
-export async function getTodoById(id) {
-  const result = await db.select().from(todos).where(eq(todos.id, id));
+export async function getTodoById(todoId, userId) {
+  const result = await db
+    .select()
+    .from(todos)
+    .where(and(eq(todos.id, todoId), eq(todos.userId, userId)));
   return result[0];
 }
 
-export async function createTodo(todo) {
+export async function createTodo(todoData) {
   try {
     const result = await db
       .insert(todos)
       .values({
-        todoTitle: todo.todoTitle,
-        description: todo.description,
-        isCompleted: todo.isCompleted ?? false,
+        todoTitle: todoData.todoTitle,
+        description: todoData.description,
+        isCompleted: todoData.isCompleted ?? false,
+        userId: todoData.userId, // 👈 Ensures user_id is NOT null
       })
       .returning();
 
     return result[0];
   } catch (error) {
-    console.error("ERROR:", error);
+    console.error("ERROR in createTodo service:", error);
     throw error;
   }
 }
 
-export async function patchTodo(id, todo) {
+export async function patchTodo(id, userId, todo) {
   const result = await db
     .update(todos)
     .set({
       todoTitle: todo.todoTitle,
-      isCompleted: todo.isCompleted,
       description: todo.description,
+      isCompleted: todo.isCompleted,
     })
-    .where(eq(todos.id, id))
+    .where(and(eq(todos.id, id), eq(todos.userId, userId))) //
     .returning();
 
   return result[0];
 }
-export async function putTodo(id, todo) {
+
+export async function putTodo(id, userId, todo) {
   const result = await db
     .update(todos)
     .set({
-      todoTitle: todo.todo_title,
+      todoTitle: todo.todoTitle,
       description: todo.description,
-      isCompleted: todo.is_completed,
+      isCompleted: todo.isCompleted,
     })
-    .where(eq(todos.id, id))
+    .where(and(eq(todos.id, id), eq(todos.userId, userId)))
     .returning();
 
   return result[0];
 }
 
-export async function deleteTodo(id) {
-  const result = await db.delete(todos).where(eq(todos.id, id)).returning();
+// 👈 Added userId and `and()` filter for security
+export async function deleteTodo(id, userId) {
+  const result = await db
+    .delete(todos)
+    .where(and(eq(todos.id, id), eq(todos.userId, userId))) // 👈 Dual filter
+    .returning();
 
   return result[0];
 }

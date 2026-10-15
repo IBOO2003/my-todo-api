@@ -18,7 +18,7 @@ export async function registerUser(userData) {
     }
 
     const passwordHash = await bcrypt.hash(userData.password, 12);
-
+    console.log(userData);
     const result = await db
       .insert(users)
       .values({
@@ -67,7 +67,7 @@ export async function loginUser(credentials) {
 
   // creating a token
   const token = jwt.sign(
-    { id: user.id, email: user.email, name: user.name },
+    { id: user.id, email: user.email },
     process.env.JWT_SECRET,
     { expiresIn: "1d" },
   );
@@ -76,7 +76,6 @@ export async function loginUser(credentials) {
     token,
     user: {
       id: user.id,
-      name: user.name,
       email: user.email,
     },
   };

@@ -6,12 +6,16 @@ import bodyParser from "body-parser";
 import todosRouter from "./routes/todos.js";
 import authRouter from "./routes/auth.js";
 import { apiLimiter, authLimiter } from "./midllewares/rateLimit.middleware.js";
+import helmet from "helmet";
 
 const app = express();
 
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json());
 app.use(cors());
+app.use(helmet());
+app.use(express.json({ limit: "15kb" }));
+app.use(express.urlencoded({ extended: true, limit: "15kb" }));
 app.use("/auth", authLimiter, authRouter);
 app.use("/todos", apiLimiter, todosRouter);
 

@@ -42,10 +42,8 @@ export async function createNewTodo(req, res) {
       });
     }
 
-    // 1. Get the authenticated user's ID from middleware
     const userId = req.user?.id;
 
-    // 2. Pass everything (including userId) to the service
     const newTodo = await createTodo({
       todoTitle: todoTitle.trim(),
       description,

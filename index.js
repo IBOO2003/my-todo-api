@@ -1,5 +1,7 @@
-import "dotenv/config";
 import express from "express";
+
+import "dotenv/config";
+
 import cors from "cors";
 import "./db.js";
 import bodyParser from "body-parser";
@@ -20,9 +22,9 @@ app.use("/auth", authLimiter, authRouter);
 app.use("/todos", apiLimiter, todosRouter);
 
 const PORT = process.env.PORT || 3000;
-
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`APP IS RUNNING ON PORT: ${PORT}`);
 });
-
 export default app;
+
+

@@ -20,7 +20,7 @@ export async function register(req, res) {
       user,
     });
   } catch (error) {
-    console.error("Registration error:", error);
+    console.error("R0egistration error:", error);
 
     return res.status(500).json({
       message: "Internal server error",

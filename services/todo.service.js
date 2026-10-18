@@ -35,7 +35,7 @@ export async function createTodo(todoData) {
   }
 }
 
-export async function patchTodo(id, userId, todo) {
+export async function patchTodo(id, userId, updates) {
   const fieldsToUpdate = {};
   if (updates.todoTitle !== undefined)
     fieldsToUpdate.todoTitle = updates.todoTitle;

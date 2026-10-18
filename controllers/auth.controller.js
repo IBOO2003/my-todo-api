@@ -3,7 +3,7 @@ import { loginUser, registerUser } from "../services/auth.service.js";
 export async function register(req, res, next) {
   try {
     const { name, email, password } = req.body;
-    if (!name || name === undefined || typeof name !== String) {
+    if (!name || typeof name !== string) {
       return res.status(400).json({
         message: "name can not be empty or non-string values",
       });

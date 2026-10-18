@@ -63,32 +63,102 @@ export async function createNewTodo(req, res) {
 export async function patchTodoById(req, res) {
   const todoId = Number(req.params.id);
 
+  // 1. Validate todo ID
   if (!Number.isInteger(todoId) || todoId <= 0) {
-    return res.status(400).json({ message: "ID must be a positive integer" });
+    return res.status(400).json({
+      message: "ID must be a positive integer",
+    });
   }
 
   try {
+    // 2. Get request body safely
     const todoUpdates = req.body ?? {};
 
-    if (Object.keys(todoUpdates).length === 0) {
-      return res.status(400).json({ message: "Request body cannot be empty" });
+    // 3. Validate request body type
+    if (typeof todoUpdates !== "object" || Array.isArray(todoUpdates)) {
+      return res.status(400).json({
+        message: "Request body must be an object",
+      });
     }
 
-    const userId = req.user.id; //
+    // 4. Reject empty request body
+    if (Object.keys(todoUpdates).length === 0) {
+      return res.status(400).json({
+        message: "Request body cannot be empty",
+      });
+    }
 
+    // 5. Validate allowed fields
+    const allowedFields = ["todoTitle", "description", "isCompleted"];
+
+    const invalidFields = Object.keys(todoUpdates).filter(
+      (field) => !allowedFields.includes(field),
+    );
+
+    if (invalidFields.length > 0) {
+      return res.status(400).json({
+        message: "Invalid fields provided",
+        invalidFields,
+      });
+    }
+
+    // 6. Validate field types
+    if (
+      todoUpdates.todoTitle !== undefined &&
+      typeof todoUpdates.todoTitle !== "string"
+    ) {
+      return res.status(400).json({
+        message: "todoTitle must be a string",
+      });
+    }
+
+    if (
+      todoUpdates.description !== undefined &&
+      typeof todoUpdates.description !== "string"
+    ) {
+      return res.status(400).json({
+        message: "description must be a string",
+      });
+    }
+
+    if (
+      todoUpdates.isCompleted !== undefined &&
+      typeof todoUpdates.isCompleted !== "boolean"
+    ) {
+      return res.status(400).json({
+        message: "isCompleted must be a boolean",
+      });
+    }
+
+    // 7. Get authenticated user ID
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({
+        message: "Authentication required",
+      });
+    }
+
+    // 8. Update todo
     const updatedTodo = await patchTodo(todoId, userId, todoUpdates);
 
+    // 9. Check whether todo exists
     if (!updatedTodo) {
-      return res.status(404).json({ message: "Todo not found" });
+      return res.status(404).json({
+        message: "Todo not found",
+      });
     }
 
+    // 10. Return updated todo
     return res.status(200).json(updatedTodo);
   } catch (error) {
     console.error("Error updating todo:", error);
-    return res.status(500).json({ message: "Internal server error" });
+
+    return res.status(500).json({
+      message: "Internal server error",
+    });
   }
 }
-
 export async function putTodoById(req, res) {
   const todoId = Number(req.params.id);
 

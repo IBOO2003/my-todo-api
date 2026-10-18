@@ -4,7 +4,6 @@ import cors from "cors";
 import "./db.js";
 import todosRouter from "./routes/todos.js";
 import authRouter from "./routes/auth.js";
-import { apiLimiter, authLimiter } from "./midllewares/rateLimit.middleware.js";
 import helmet from "helmet";
 
 const app = express();
@@ -20,8 +19,8 @@ app.use(express.json({ limit: "15kb" }));
 app.use(express.urlencoded({ extended: true, limit: "15kb" }));
 
 // Routes
-app.use("/auth", authLimiter, authRouter);
-app.use("/todos", apiLimiter, todosRouter);
+app.use("/auth", authRouter);
+app.use("/todos", todosRouter);
 
 // Handle request bodies larger than 15 KB
 app.use((err, req, res, next) => {

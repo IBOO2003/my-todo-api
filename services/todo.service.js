@@ -37,27 +37,30 @@ export async function createTodo(todoData) {
 
 export async function patchTodo(id, userId, updates) {
   const fieldsToUpdate = {};
-  if (updates.todoTitle !== undefined)
+
+  if (updates.todoTitle !== undefined) {
     fieldsToUpdate.todoTitle = updates.todoTitle;
-  if (updates.description !== undefined)
+  }
+
+  if (updates.description !== undefined) {
     fieldsToUpdate.description = updates.description;
-  if (updates.isCompleted !== undefined)
+  }
+
+  if (updates.isCompleted !== undefined) {
     fieldsToUpdate.isCompleted = updates.isCompleted;
+  }
+
   if (Object.keys(fieldsToUpdate).length === 0) {
     return null;
   }
 
   const result = await db
     .update(todos)
-    .set({
-      todoTitle: todo.todoTitle,
-      description: todo.description,
-      isCompleted: todo.isCompleted,
-    })
-    .where(and(eq(todos.id, id), eq(todos.userId, userId))) //
+    .set(fieldsToUpdate)
+    .where(and(eq(todos.id, id), eq(todos.userId, userId)))
     .returning();
 
-  return result[0];
+  return result[0] ?? null;
 }
 
 export async function putTodo(id, userId, todo) {

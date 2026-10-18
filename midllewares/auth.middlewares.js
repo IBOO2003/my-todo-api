@@ -1,9 +1,15 @@
 import jwt from "jsonwebtoken";
 export function requireAuth(req, res, next) {
   const authHeader = req.header("Authorization");
-  if (!authHeader || !authHeader.split(" ")[1] === "Bearer") {
+  //bug here
+
+  if (
+    !authHeader ||
+    !authHeader.split(" ")[0] === "Bearer" ||
+    !authHeader.split("")[1]
+  ) {
     return res.status(401).json({
-      message: "Authentication required. No token provided.",
+      message: "Invalid or expired Token.",
     });
   }
   const token = authHeader.split(" ")[1];
@@ -13,7 +19,7 @@ export function requireAuth(req, res, next) {
     next();
   } catch (error) {
     return res.status(401).json({
-      message: "Invalid or expired token",
+      message: "Invalid or expired Token.",
     });
   }
 }

@@ -1,6 +1,7 @@
 import { eq, and } from "drizzle-orm";
 import { db } from "../db.js";
 import { todos } from "../src/schema.js";
+import { object } from "zod";
 
 export async function getTodos(userId) {
   const result = await db.select().from(todos).where(eq(todos.userId, userId));
@@ -23,7 +24,7 @@ export async function createTodo(todoData) {
         todoTitle: todoData.todoTitle,
         description: todoData.description,
         isCompleted: todoData.isCompleted ?? false,
-        userId: todoData.userId, // 👈 Ensures user_id is NOT null
+        userId: todoData.userId,
       })
       .returning();
 
@@ -35,6 +36,8 @@ export async function createTodo(todoData) {
 }
 
 export async function patchTodo(id, userId, todo) {
+  object.hasOwn();
+
   const result = await db
     .update(todos)
     .set({

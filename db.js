@@ -24,5 +24,3 @@ const pool = new Pool({
 export const db = drizzle(pool);
 
 export default pool;
-
-// postgresql://postgres:tfipYzAHakFTAlvuGkNkftMzdvVexxcu@roundhouse.proxy.rlwy.net:27391/railway

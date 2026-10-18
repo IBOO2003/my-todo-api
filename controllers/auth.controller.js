@@ -1,9 +1,13 @@
 import { loginUser, registerUser } from "../services/auth.service.js";
 
-export async function register(req, res) {
+export async function register(req, res, next) {
   try {
     const { name, email, password } = req.body;
-
+    if (!name || name === undefined || typeof name !== String) {
+      return res.status(400).json({
+        message: "name can not be empty or non-string values",
+      });
+    }
     const user = await registerUser({
       name: name.trim(),
       email: email.trim().toLowerCase(),
@@ -20,18 +24,13 @@ export async function register(req, res) {
       user,
     });
   } catch (error) {
-    console.error("R0egistration error:", error);
-
-    return res.status(500).json({
-      message: "Internal server error",
-      error,
-    });
+    next(err);
   }
 }
 
 //login <<<<<>>>>>
 
-export async function login(req, res) {
+export async function login(req, res, next) {
   try {
     const { email, password } = req.body;
 
@@ -51,9 +50,6 @@ export async function login(req, res) {
       user: result.user,
     });
   } catch (error) {
-    console.error("Login error", error);
-    return res.status(500).json({
-      message: "internal server error",
-    });
+    next(err);
   }
 }

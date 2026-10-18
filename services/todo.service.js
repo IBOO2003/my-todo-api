@@ -74,7 +74,7 @@ export async function putTodo(id, userId, todo) {
     .where(and(eq(todos.id, id), eq(todos.userId, userId)))
     .returning();
 
-  return result[0];
+  return result[0] ?? null;
 }
 
 // 👈 Added userId and `and()` filter for security

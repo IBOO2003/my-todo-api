@@ -162,21 +162,75 @@ export async function patchTodoById(req, res) {
 export async function putTodoById(req, res) {
   const todoId = Number(req.params.id);
 
-  if (Number.isNaN(todoId)) {
-    return res.status(400).json({ message: "ID must be a number" });
+  // 1. Validate ID
+  if (!Number.isInteger(todoId) || todoId <= 0) {
+    return res.status(400).json({
+      message: "ID must be a positive integer",
+    });
   }
 
   try {
-    const userId = req.user.id;
-    const updatedTodo = await putTodo(todoId, userId, req.body);
-    if (!updatedTodo) {
-      return res.status(404).json({ message: "Todo not found" });
+    // 2. Validate request body
+    const todo = req.body;
+
+    if (!todo || typeof todo !== "object" || Array.isArray(todo)) {
+      return res.status(400).json({
+        message: "Request body must be an object",
+      });
     }
 
+    // 3. Validate required fields
+    if (typeof todo.todoTitle !== "string" || todo.todoTitle.trim() === "") {
+      return res.status(400).json({
+        message: "todoTitle is required and must be a non-empty string",
+      });
+    }
+
+    if (
+      todo.description !== undefined &&
+      todo.description !== null &&
+      typeof todo.description !== "string"
+    ) {
+      return res.status(400).json({
+        message: "description must be a string or null",
+      });
+    }
+
+    if (
+      todo.isCompleted !== undefined &&
+      typeof todo.isCompleted !== "boolean"
+    ) {
+      return res.status(400).json({
+        message: "isCompleted must be a boolean",
+      });
+    }
+
+    // 4. Check authentication
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({
+        message: "Authentication required",
+      });
+    }
+
+    // 5. Update todo
+    const updatedTodo = await putTodo(todoId, userId, todo);
+
+    if (!updatedTodo) {
+      return res.status(404).json({
+        message: "Todo not found",
+      });
+    }
+
+    // 6. Return updated todo
     return res.status(200).json(updatedTodo);
   } catch (error) {
     console.error("Error updating todo:", error);
-    return res.status(500).json({ message: "Internal server error" });
+
+    return res.status(500).json({
+      message: "Internal server error",
+    });
   }
 }
 export async function deleteTodoById(req, res) {

@@ -1,33 +1,50 @@
 import { body, validationResult } from "express-validator";
 
+function handleValidationErrors(req, res, next) {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      errors: errors.array().map((e) => ({ field: e.path, message: e.msg })),
+    });
+  }
+  next();
+}
+
 export const validateRegister = [
+  body("name")
+    .trim()
+    .notEmpty()
+    .withMessage("Name is required")
+    .isLength({ min: 2, max: 50 })
+    .withMessage("Name must be between 2 and 50 characters"),
+
   body("email")
     .isEmail()
-    .withMessage("please provide a valid email")
-    .matches(/^[A-Za-z0-9._%+-]+@gs\.com$/)
+    .withMessage("Please provide a valid email address")
     .normalizeEmail(),
 
   body("password")
     .isLength({ min: 8 })
-    .withMessage("password must be at least 8 characters long")
+    .withMessage("Password must be at least 8 characters long")
     .matches(/[A-Z]/)
-    .withMessage("password must contain at least one uppercase letter")
+    .withMessage("Password must contain at least one uppercase letter")
     .matches(/[a-z]/)
-    .withMessage("password must contain at least one lowercase letter")
+    .withMessage("Password must contain at least one lowercase letter")
     .matches(/[0-9]/)
-    .withMessage("password must contain at least one number")
-    .matches(/[\w_]/)
-    .withMessage("password must contain at least one special character")
-    .notEmpty()
-    .withMessage("password cannot be empty"),
+    .withMessage("Password must contain at least one number")
+    .matches(/[^A-Za-z0-9]/)
+    .withMessage("Password must contain at least one special character"),
 
-  (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({
-        errors: errors.array(),
-      });
-    }
-    next();
-  },
+  handleValidationErrors,
+];
+
+export const validateLogin = [
+  body("email")
+    .isEmail()
+    .withMessage("Please provide a valid email address")
+    .normalizeEmail(),
+
+  body("password").notEmpty().withMessage("Password is required"),
+
+  handleValidationErrors,
 ];

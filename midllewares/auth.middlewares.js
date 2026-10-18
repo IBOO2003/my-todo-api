@@ -1,25 +1,33 @@
 import jwt from "jsonwebtoken";
+
 export function requireAuth(req, res, next) {
   const authHeader = req.header("Authorization");
-  //bug here
 
   if (
     !authHeader ||
-    !authHeader.split(" ")[0] === "Bearer" ||
-    !authHeader.split("")[1]
+    typeof authHeader !== "string" ||
+    !authHeader.startsWith("Bearer ")
   ) {
     return res.status(401).json({
-      message: "Invalid or expired Token.",
+      message: "Authentication required. Format must be: Bearer <token>",
     });
   }
-  const token = authHeader.split(" ")[1];
+
+  const token = authHeader.slice(7).trim();
+
+  if (!token) {
+    return res.status(401).json({
+      message: "Authentication token missing.",
+    });
+  }
+
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded;
     next();
   } catch (error) {
     return res.status(401).json({
-      message: "Invalid or expired Token.",
+      message: "Invalid or expired token",
     });
   }
 }

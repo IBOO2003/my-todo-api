@@ -36,7 +36,16 @@ export async function createTodo(todoData) {
 }
 
 export async function patchTodo(id, userId, todo) {
-  object.hasOwn();
+  const fieldsToUpdate = {};
+  if (updates.todoTitle !== undefined)
+    fieldsToUpdate.todoTitle = updates.todoTitle;
+  if (updates.description !== undefined)
+    fieldsToUpdate.description = updates.description;
+  if (updates.isCompleted !== undefined)
+    fieldsToUpdate.isCompleted = updates.isCompleted;
+  if (Object.keys(fieldsToUpdate).length === 0) {
+    return null;
+  }
 
   const result = await db
     .update(todos)

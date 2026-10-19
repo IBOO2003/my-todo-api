@@ -1,7 +1,7 @@
-import { db } from "../db.js"; //
+import { db } from "../db.js";
 import { users } from "../src/schema.js";
 
-export async function getAllUserEmails() {
+export async function getAllUsers() {
   const result = await db
     .select({
       name: users.username,
@@ -11,3 +11,5 @@ export async function getAllUserEmails() {
 
   return result;
 }
+
+export const getAllUserEmails = getAllUsers;

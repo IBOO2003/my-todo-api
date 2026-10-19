@@ -6,6 +6,7 @@ import helmet from "helmet";
 import "./db.js";
 import todosRouter from "./routes/todos.js";
 import authRouter from "./routes/auth.js";
+import usersRouter from "./routes/users.js";
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use(express.urlencoded({ extended: true, limit: "15kb" }));
 // Routes
 app.use("/auth", authRouter);
 app.use("/todos", todosRouter);
+app.use("/users", usersRouter);
 
 // Health check endpoint (for deployment platforms)
 app.get("/health", (req, res) => {

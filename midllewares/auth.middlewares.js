@@ -13,27 +13,39 @@ export function requireAuth(req, res, next) {
     });
   }
 
-  const token = authHeader.slice(7).trim();
+  const token = authHeader.split(" ")[1];
 
   if (!token) {
     return res.status(401).json({
       message: "Authentication token missing.",
+      code: "NO_TOKEN",
     });
   }
-
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
     req.user = decoded;
-    const dateInMiliseconds = new Date().getTime();
-    // check if the token is expired
-    if (dateInMiliseconds > decoded.exp * 1000) {
-      return res.status(401).json({
-        message: "Token expired",
-      });
-    }
     next();
   } catch (error) {
-    return res.status(500).json({
+    if (error.name == "NotBeforeError") {
+      return res.status(401).json({
+        message: "Token is not active yet",
+        code: "TOKEN_NOT_ACTIVE_YET",
+      });
+    }
+    if (error.name == "TokenExpiredError") {
+      return res.status(401).json({
+        message: "Token is expierd ",
+        code: "TOKEN_IS_EXPIRED",
+      });
+    }
+    if ((error.name = "JsonWebTokenError")) {
+      return res.status(401).json({
+        message: "Invalid Token ",
+        code: "TOKEN_IS_NOT_VALID",
+      });
+    }
+    res.status(500).json({
       message: "Internal server error",
     });
   }

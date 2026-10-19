@@ -69,7 +69,7 @@ export async function loginUser(credentials) {
   const token = jwt.sign(
     { id: user.id, email: user.email },
     process.env.JWT_SECRET,
-    { expiresIn: "1d" },
+    { expiresIn: "5m" },
   );
 
   // returnuing both (user + token)

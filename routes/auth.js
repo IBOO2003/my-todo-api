@@ -10,3 +10,7 @@ router.post("/register", validateRegister, register);
 router.post("/login", validateLogin, login);
 
 export default router;
+const name = "ibrahim";
+const age = 22;
+if (name > age) {
+}

@@ -16,12 +16,16 @@ export const validateRegister = [
     .notEmpty()
     .withMessage("Name is required")
     .isLength({ min: 2, max: 50 })
-    .withMessage("Name must be between 2 and 50 characters"),
+    .withMessage("Name must be between 2 and 50 characters")
+    .matches(/^[a-zA-Z]/)
+    .withMessage("Name must start with a character"),
 
   body("email")
     .isEmail()
     .withMessage("Please provide a valid email address")
-    .normalizeEmail(),
+    .normalizeEmail()
+    .matches(/^[a-zA-Z]/)
+    .withMessage("email must start with a character"),
 
   body("password")
     .isLength({ min: 8 })

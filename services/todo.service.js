@@ -1,7 +1,6 @@
 import { eq, and } from "drizzle-orm";
 import { db } from "../db.js";
 import { todos } from "../src/schema.js";
-import { object } from "zod";
 
 export async function getTodos(userId) {
   const result = await db.select().from(todos).where(eq(todos.userId, userId));

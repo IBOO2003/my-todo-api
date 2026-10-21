@@ -21,8 +21,8 @@ export async function getUserEmails(req, res) {
 
 export async function getAllTodos(req, res) {
   try {
-    const userId = req.user.id; // 👈 Securely grabbed from middleware
-    const todos = await getTodos(userId); // 👈 Pass userId to service
+    const userId = req.user.id;
+    const todos = await getTodos(userId);
 
     return res.status(200).json(todos);
   } catch (error) {

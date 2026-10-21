@@ -25,7 +25,6 @@
 - [🔑 Environment Variables](#-environment-variables)
 - [🧪 API Testing](#-api-testing)
 - [🛡️ Validation & Error Handling](#️-validation--error-handling)
-- [☁️ Deployment](#️-deployment)
 - [📈 Future Improvements](#-future-improvements)
 - [👨‍💻 Author](#-author)
 
